@@ -19,11 +19,11 @@ SCRIPT_ARGS=("$@")
 
 # Initial URL & command of one-click script (for usage & logging)
 # TODO: change the link to real
-SCRIPT_INITIATOR_URL="https://tcp.hy2.sh"
+SCRIPT_INITIATOR_URL="https://github.com/xxf185/tcp-brutal/releases/download/v1.0.1/install_dkms.sh"
 SCRIPT_INITIATOR_COMMAND="bash <(curl -fsSL $SCRIPT_INITIATOR_URL)"
 
 # URL of GitHub
-REPO_URL="https://github.com/apernet/tcp-brutal"
+REPO_URL="https://github.com/xxf185/tcp-brutal"
 
 # URL of Hysteria 2 API
 HY2_API_BASE_URL="https://api.hy2.io/v1"
