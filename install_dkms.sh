@@ -23,7 +23,7 @@ SCRIPT_INITIATOR_URL="https://raw.githubusercontent.com/xxf185/tcp-brutal/refs/h
 SCRIPT_INITIATOR_COMMAND="bash <(curl -fsSL $SCRIPT_INITIATOR_URL)"
 
 # URL of GitHub
-REPO_URL="https://github.com/apernet/tcp-brutal"
+REPO_URL="https://github.com/xxf185/tcp-brutal"
 
 # URL of Hysteria 2 API
 HY2_API_BASE_URL="https://api.hy2.io/v1"
