@@ -544,14 +544,14 @@ dkms_remove_modules() {
   for version in "${_versions_to_remove[@]}"; do
     local _dkms_version="${version#v}"
 
-    echo -n "Removing DKMS module $_module/$_dkms_version ... "
+    echo -n "删除 DKMS module $_module/$_dkms_version ... "
     if dkms remove "$_module/$_dkms_version" --all > /dev/null; then
       echo "ok"
     else
       # suppress dkms remove failed, shall not to be a problem
       continue
     fi
-    echo -n "Cleaning DKMS module source /usr/src/$_module-$_dkms_version ... "
+    echo -n "删除 DKMS module source /usr/src/$_module-$_dkms_version ... "
     if rm -rf "/usr/src/$_module-$_dkms_version"; then
       echo "ok"
     else
@@ -588,9 +588,9 @@ dkms_ldtarball() {
 dkms_install_tarball() {
   local _tarball="$1"
 
-  echo "Installing DKMS module from tarball file $_tarball ... "
+  echo "安装 DKMS module from tarball file $_tarball ... "
   if ! dkms_ldtarball "$_tarball"; then
-    error "Failed to install DKMS tarball, please check above output or try to uninstall first."
+    error "安装DKMS tarball失败 "
     return 1
   fi
 }
@@ -610,11 +610,11 @@ kmod_load_if_unloaded() {
   local _module="$1"
 
   if ! kmod_is_loaded "$_module"; then
-    echo -n "Loading kernel module $_module ... "
+    echo -n "加载中 kernel module $_module ... "
     if modprobe "$_module"; then
       echo "ok"
     else
-      error "Failed to load kernel module, kernel module might not be installed successfully."
+      error "加载失败 kernel module, kernel module 可能无法成功安装。"
       return 1
     fi
   fi
@@ -624,12 +624,12 @@ kmod_unload_if_loaded() {
   local _module="$1"
 
   if kmod_is_loaded "$_module"; then
-    echo -n "Unloading kernel module $_module ... "
+    echo -n "卸载 kernel module $_module ... "
     if rmmod "$_module"; then
       echo "ok"
     else
-      error "Failed to unload kernel module, kernel module might be occupied by other process."
-      error "Try to stop all related proxy service, or simply reboot your server and try again."
+      error "卸载 kernel module失败, kernel module 可能被其他进程占用。"
+      error "请尝试停止所有相关的代理服务，或者直接重启服务器重试。"
       return 1
     fi
   fi
@@ -638,22 +638,22 @@ kmod_unload_if_loaded() {
 kmod_setup_autoload() {
   local _module="$1"
 
-  echo -n "Enabling auto load kernel module $_module on system boot ... "
+  echo -n "启用自动加载 kernel module $_module "
   if echo "$_module" > "/etc/modules-load.d/$_module.conf"; then
     echo "ok"
   else
-    warning "Failed to enable auto load $_module on system boot."
+    warning "自动加载失败 $_module on system boot."
   fi
 }
 
 kmod_unsetup_autoload() {
   local _module="$1"
 
-  echo -n "Disabling auto load kernel module $_module on system boot ... "
+  echo -n "禁用自动加载 kernel module $_module  "
   if rm -f "/etc/modules-load.d/$_module.conf"; then
     echo "ok"
   else
-    warning "Failed to disable auto load $_module on system boot."
+    warning "禁用自动加载失败 $_module "
   fi
 }
 
@@ -669,7 +669,7 @@ get_latest_version() {
 
   local _tmpfile=$(mktemp)
   if ! curl -sS "$HY2_API_BASE_URL/update?cver=installscript&arch=generic&plat=linux&chan=tcp-brutal" -o "$_tmpfile"; then
-    error "Failed to get the latest version from Hysteria 2 API, please check your network and try again."
+    error "无法从 Hysteria 2 API 获取最新版本，请检查您的网络并重试。."
     exit 11
   fi
 
@@ -689,9 +689,9 @@ download_dkms_tarball() {
   local _destination="$2"
 
   local _download_url="$REPO_URL/releases/download/$_version/tcp-brutal.dkms.tar.gz"
-  echo "Downloading DKMS tarball: $_download_url ..."
+  echo "下载 DKMS tarball: $_download_url ..."
   if ! curl -R -H 'Cache-Control: no-cache' "$_download_url" -o "$_destination"; then
-    error "Download failed, please check your network and try again."
+    error "下载失败，请检查网络并重试."
     return 11
   fi
   return 0
@@ -755,19 +755,19 @@ perform_install() {
   fi
 
   # check installed version
-  echo "Cleaning old installations ... "
+  echo "清理旧配置 ... "
   dkms_remove_modules "$DKMS_MODULE_NAME" "1"
 
-  echo -n "Checking installed version ... "
+  echo -n "检查已安装版本... "
   local _installed_version="$(dkms_get_installed_versions "$DKMS_MODULE_NAME" | head -1)"
   if [[ -n "$_installed_version" ]]; then
     echo "$_installed_version"
   else
-    echo "not installed"
+    echo "未安装"
   fi
 
   if [[ -z "$_local_file" && -z "$_version" ]]; then
-    echo -n "Checking latest version ... "
+    echo -n "检查最新版本 ... "
     local _latest_version=$(get_latest_version)
     if [[ -n "$_latest_version" ]]; then
       echo "$_latest_version"
@@ -798,35 +798,35 @@ perform_install() {
     rm -f "$_local_file"
   fi
 
-  echo "Rebuilding DKMS modules as needed ... "
+  echo "根据需要重建 DKMS 模块 ... "
   if ! dkms autoinstall; then
-    warning "Error occurred in 'dkms autoinstall', please check above output."
+    warning "发生错误 'dkms autoinstall', 请查看以上输出结果。."
   fi
 
   kmod_setup_autoload "$KERNEL_MODULE_NAME"
 
   if [[ -z "$_install_needed" ]]; then
     if ! kmod_load_if_unloaded "$KERNEL_MODULE_NAME"; then
-      warning "tcp-brutal is installed but failed to load."
+      warning "tcp-brutal 已安装但加载失败。"
     fi
 
-    echo "${tbold}There is nothing to do today.${treset}"
+    echo "${tbold}今天没什么事可做${treset}"
     exit 0
   fi
 
   if ! kmod_unload_if_loaded "$KERNEL_MODULE_NAME"; then
-    warning "tcp-brutal is successfully update, but occupied by other process, please reboot your server to active the latest change."
+    warning "tcp-brutal 已成功更新, 但由于被其他进程占用，请重启服务器以使最新更改生效。"
     exit 0
   fi
 
   if ! kmod_load_if_unloaded "$KERNEL_MODULE_NAME"; then
-    error "tcp-brutal is successfully installed, but failed to load, this might cause by mismatched linux-headers."
-    error "If you update your system recently, reboot the system might solve this."
+    error "tcp-brutal 安装成功，但加载失败，这可能是由于 linux-headers 不匹配造成的"
+    error "如果您最近更新了系统，重启系统或许可以解决这个问题."
     exit 2
   fi
 
   echo
-  echo -e "${tbold}Congratulation! tcp-brutal $_version has been successfully installed and loaded on your server.${treset}"
+  echo -e "${tbold} tcp-brutal $_version 安装成功${treset}"
 }
 
 perform_uninstall() {
@@ -844,13 +844,13 @@ perform_uninstall() {
   dkms_remove_modules "$DKMS_MODULE_NAME" ""
 
   if ! kmod_unload_if_loaded "$KERNEL_MODULE_NAME"; then
-    warning "tcp-brutal is successfully uninstall from your server, but failed to unload from the kernel."
-    warning "Please reboot your system to unload it from the kernel."
+    warning "tcp-brutal 已成功从服务器卸载，但未能从kernel卸载。"
+    warning "请重新启动系统以将其从kernel卸载。"
     exit 0
   fi
 
   echo
-  echo -e "${tbold}Congratulation! tcp-brutal has been successfully uninstalled and unloaded."
+  echo -e "${tbold}tcp-brutal 卸载完成"
 }
 
 perform_check() {
@@ -863,27 +863,27 @@ perform_check() {
     shift
   done
 
-  echo -n "Checking kernel module ... "
+  echo -n "检查 kernel module ... "
   if kmod_is_loaded "$KERNEL_MODULE_NAME"; then
-    echo "loaded"
+    echo "已加载"
   else
-    echo "not loaded"
+    echo "未加载"
   fi
 
-  echo -n "Checking installed version ... "
+  echo -n "检查已安装版本 ... "
   local _installed_versions=($(dkms_get_installed_versions "$DKMS_MODULE_NAME"))
   if [[ "${#_installed_versions[@]}" -eq "0" ]]; then
-    echo "not installed"
+    echo "未安装"
   elif [[ "${#_installed_versions[@]}" -eq "1" ]]; then
     echo "${_installed_versions[0]}"
   else
-    echo "multiple version installed"
+    echo "已安装多个版本"
     for version in "${_installed_versions[@]}"; do
       echo -e "\tFound $version"
     done
   fi
 
-  echo -n "Checking latest version ... "
+  echo -n "检查最新版本 ... "
   local _latest_version=$(get_latest_version)
   if [[ -n "$_latest_version" ]]; then
     echo "$_latest_version"
