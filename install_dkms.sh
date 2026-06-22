@@ -755,10 +755,10 @@ perform_install() {
   fi
 
   # check installed version
-  echo "Cleaning old installations ... "
+  echo "清理旧版本 ... "
   dkms_remove_modules "$DKMS_MODULE_NAME" "1"
 
-  echo -n "Checking installed version ... "
+  echo -n "检查已安装版本 ... "
   local _installed_version="$(dkms_get_installed_versions "$DKMS_MODULE_NAME" | head -1)"
   if [[ -n "$_installed_version" ]]; then
     echo "$_installed_version"
@@ -767,7 +767,7 @@ perform_install() {
   fi
 
   if [[ -z "$_local_file" && -z "$_version" ]]; then
-    echo -n "Checking latest version ... "
+    echo -n "检查最新版本 ... "
     local _latest_version=$(get_latest_version)
     if [[ -n "$_latest_version" ]]; then
       echo "$_latest_version"
@@ -810,7 +810,7 @@ perform_install() {
       warning "tcp-brutal is installed but failed to load."
     fi
 
-    echo "${tbold}There is nothing to do today.${treset}"
+    echo "${tbold}今天无事可做${treset}"
     exit 0
   fi
 
