@@ -190,18 +190,18 @@ install_software() {
   local _package_name="$1"
 
   if ! detect_package_manager; then
-    error "Supported package manager is not detected, please install the following package manually:"
+    error "未检测到支持的软件包管理器，请手动安装以下软件包"
     echo
     echo -e "\t* $_package_name"
     echo
     exit 65
   fi
 
-  echo "Installing missing dependence '$_package_name' with '$PACKAGE_MANAGEMENT_INSTALL' ... "
+  echo "安装缺少的依赖项 '$_package_name' with '$PACKAGE_MANAGEMENT_INSTALL' ... "
   if $PACKAGE_MANAGEMENT_INSTALL "$_package_name"; then
     echo "ok"
   else
-    error "Cannot install '$_package_name' with detected package manager, please install it manually."
+    error "无法安装 '$_package_name' 如果检测到软件包管理器，请手动安装。"
     exit 65
   fi
 }
@@ -209,20 +209,20 @@ install_software() {
 install_linux_headers() {
   local _kernel_ver="$(uname -r)"
 
-  echo "Try to install linux-headers for $_kernel_ver ... "
+  echo "尝试安装 linux-headers for $_kernel_ver ... "
 
   if has_command pacman; then
     local _kernel_img="/lib/modules/$_kernel_ver/vmlinuz"
     if [[ ! -f "$_kernel_img" ]]; then
-      error "Kernel image does not exist."
-      note "If you are using a kernel installed by pacman, this usually caused by system upgrading without reboot."
-      note "Please reboot your server and try again."
+      error "Kernel image 不存在"
+      note "如果您使用的是通过 pacman 安装的内核，这通常是由于系统升级后未重启造成的。"
+      note "请重启服务器后重试。"
       return 2
     fi
     local _kernel_pkg=$(pacman -Qoq "$_kernel_img")
     if [[ -z "$_kernel_pkg" ]]; then
-      error "Failed to detect kernel package."
-      warning "It seems like you are NOT using a kernel that installed by pacman."
+      error "无法检测kernel_pkg"
+      warning "看起来你使用的内核并非通过 pacman 安装的。"
       return 2
     fi
     install_software "$_kernel_pkg-headers"
@@ -232,7 +232,7 @@ install_linux_headers() {
     install_software "kernel-devel-$_kernel_ver"
   else
     # unsupported
-    error "Automatically linux headers installing is currently not supported on this distribution."
+    error "此发行版目前不支持自动安装 Linux 头文件。"
     return 1
   fi
 }
@@ -261,7 +261,7 @@ rerun_with_sudo() {
     _target_script="$0"
   fi
 
-  note "Re-running this script with sudo."
+  note "使用 sudo 重新运行此脚本。"
   exec_sudo "$_target_script" "${SCRIPT_ARGS[@]}"
 }
 
@@ -270,10 +270,10 @@ check_permission() {
     return
   fi
 
-  note "The user running this script is not root."
+  note "运行此脚本的用户不是root用户。"
 
   if ! rerun_with_sudo; then
-    error "Please manually switch to root and run this script again."
+    error "请手动切换到root用户并再次运行此脚本。"
     echo
     echo -e "\t${tred}sudo -H bash${treset}"
     echo -e "\t${tred}$(script_name "1")${treset}"
