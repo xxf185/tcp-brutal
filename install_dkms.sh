@@ -19,7 +19,7 @@ SCRIPT_ARGS=("$@")
 
 # Initial URL & command of one-click script (for usage & logging)
 # TODO: change the link to real
-SCRIPT_INITIATOR_URL="https://tcp.hy2.sh"
+SCRIPT_INITIATOR_URL="https://raw.githubusercontent.com/xxf185/tcp-brutal/refs/heads/main/install_dkms.sh"
 SCRIPT_INITIATOR_COMMAND="bash <(curl -fsSL $SCRIPT_INITIATOR_URL)"
 
 # URL of GitHub
