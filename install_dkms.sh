@@ -826,7 +826,7 @@ perform_install() {
   fi
 
   echo
-  echo -e "${tbold}Congratulation! tcp-brutal $_version has been successfully installed and loaded on your server.${treset}"
+  echo -e "${tbold}tcp-brutal $_version 安装已成功${treset}"
 }
 
 perform_uninstall() {
@@ -870,7 +870,7 @@ perform_check() {
     echo "not loaded"
   fi
 
-  echo -n "Checking installed version ... "
+  echo -n "检查已安装版本 ... "
   local _installed_versions=($(dkms_get_installed_versions "$DKMS_MODULE_NAME"))
   if [[ "${#_installed_versions[@]}" -eq "0" ]]; then
     echo "not installed"
@@ -883,7 +883,7 @@ perform_check() {
     done
   fi
 
-  echo -n "Checking latest version ... "
+  echo -n "检查最新版本 ... "
   local _latest_version=$(get_latest_version)
   if [[ -n "$_latest_version" ]]; then
     echo "$_latest_version"
